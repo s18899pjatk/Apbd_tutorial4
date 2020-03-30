@@ -1,10 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Threading.Tasks;
-using Tutorial4.Models;
+using Tutorial4.Services;
 
 namespace Tutorial4.Controllers
 {
@@ -12,55 +7,29 @@ namespace Tutorial4.Controllers
     [Route("api/students")]
     public class StudentsController : ControllerBase
     {
-       
+        private IStudentsDb _dbService;
+
+        public StudentsController(IStudentsDb db)
+        {
+            _dbService = db;
+        }
 
         [HttpGet]
         public IActionResult GetStudents(string orderBy)
         {
-            var students = new List<Student>();
-            using (var sqlConnection = new SqlConnection("Data Source=db-mssql;Initial Catalog=s18899;Integrated Security=True"))
-            {
-              using(var command = new SqlCommand())
-                {
-                    command.Connection = sqlConnection;
-                    command.CommandText = "select s.FirstName, s.LastName, s.BirthDate, st.Name as Studies, e.Semester " +
-                        "from Student s " +
-                        "join Enrollment e on e.IdEnrollment = s.IdEnrollment " +
-                        "join Studies st on st.IdStudy = e.IdStudy; ";
-                    sqlConnection.Open();
-                    var responce = command.ExecuteReader();
-                    while (responce.Read())
-                    {
-                        var st = new Student
-                        {
-                        FirstName = responce["FirstName"].ToString(),
-                        LastName = responce["LastName"].ToString(),
-                        Studies = responce["Studies"].ToString(),
-                        BirthDate = DateTime.Parse(responce["BirthDate"].ToString()),
-                        Semester = int.Parse(responce["Semester"].ToString())
-                        };
-
-                        students.Add(st);
-                    }
-                }
-            }
-           
-            return Ok(students);       
+            return Ok(_dbService.GetStudents());
         }
 
-        [HttpGet("{id}")]
-        public IActionResult GetStudent(int id)
+        [HttpGet("entries/{id}")]
+        public IActionResult GetSemester(string id)
         {
-            if (id == 1)
+            if (_dbService.GetSemester(id) != null)
             {
-                return Ok("Kowalski");
+                return Ok(_dbService.GetSemester(id));
             }
-            else if (id == 2)
-            {
-                return Ok("Malewski");
-            }
-            return NotFound("Cannot find the student");
-        }
+            else return NotFound("Record has not been found");
+        }       
+        
 
 
 
