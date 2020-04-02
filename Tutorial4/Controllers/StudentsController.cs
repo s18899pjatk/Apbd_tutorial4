@@ -23,47 +23,12 @@ namespace Tutorial4.Controllers
         [HttpGet("entries/{id}")]
         public IActionResult GetSemester(string id)
         {
-            if (_dbService.GetSemester(id) != null)
+            var resp = _dbService.GetSemester(id);
+            if (resp != null)
             {
-                return Ok(_dbService.GetSemester(id));
+                return Ok(resp);
             }
             else return NotFound("Record has not been found");
-        }       
-        
-
-
-
-        //[HttpPost]
-        //public IActionResult CreateStudent(Student student)
-        //{
-        //    student.IndexNumber = $"s{new Random().Next(1, 20000)}";
-        //    // _dbService.GetStudents().ToList().Add(student);
-        //    return Ok(student);
-        //}
-
-        //[HttpPut("{id}")]
-        //public IActionResult UpdateStudent(Student student, int id)
-        //{
-        //    if(student.idStudent != id)
-        //    {
-        //         return NotFound("Student Not Found");
-        //    }
-        //    // updating object 
-        //    // student.FirstName = "James";
-        //    // _dbService.GetStudents().ToList().Insert(id, student);
-        //    return Ok("Update completed");
-        //}
-
-        //[HttpDelete("{id}")]
-        //public IActionResult DeleteStudent(int id)
-        //{
-        //    if (id == null)
-        //    {
-        //        return NotFound("Student Not Found");
-        //    }
-        //    // deleting object 
-        //    //_dbService.GetStudents().ToList().RemoveAt(id);
-        //    return Ok("Delete completed");
-        //}
+        }
     }
 }
